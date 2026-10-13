@@ -453,7 +453,7 @@ setMensajeAlumno('')
           type="email"
           value={correo}
           onChange={(e) => setCorreo(e.target.value)}
-          placeholder="correo@institucion.edu.mx"
+          placeholder="correo@institucional.edu.mx"
           autoComplete="email"
         />
 
