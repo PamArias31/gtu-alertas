@@ -1,0 +1,88 @@
+.academia-login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #f4eeee 0%, #f7f7f8 100%);
+  padding: 24px;
+}
+
+.academia-login-card {
+  width: 100%;
+  max-width: 460px;
+  background: white;
+  border-radius: 18px;
+  padding: 34px;
+  box-shadow: 0 12px 32px rgba(91, 36, 42, 0.14);
+  border-top: 6px solid #6b2b31;
+}
+
+.academia-login-card h1 {
+  margin: 0;
+  font-size: 32px;
+  color: #172033;
+}
+
+.academia-login-subtitle {
+  margin: 8px 0 28px;
+  color: #6b7280;
+}
+
+.academia-login-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.academia-login-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-weight: 700;
+  color: #4b5563;
+}
+
+.academia-login-card input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 16px;
+  outline: none;
+}
+
+.academia-login-card input:focus {
+  border-color: #6b2b31;
+  box-shadow: 0 0 0 3px rgba(107, 43, 49, 0.12);
+}
+
+.academia-login-card button {
+  margin-top: 4px;
+  padding: 14px 18px;
+  border: none;
+  border-radius: 10px;
+  background: #6b2b31;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.academia-login-card button:hover {
+  background: #572228;
+}
+
+.academia-login-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.academia-login-mensaje {
+  margin-top: 16px;
+  padding: 12px 14px;
+  background: #fdf2f2;
+  border-radius: 8px;
+  color: #8f1d1d;
+  font-size: 14px;
+}
