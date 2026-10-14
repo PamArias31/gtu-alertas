@@ -26,7 +26,7 @@ type ObservacionAcademia = {
   usuario_academia_id: number
   comentario: string
   created_at: string
-  usuario_nombre?: string
+  autor_nombre: string | null
 }
 
 type UsuarioAcademia = {
@@ -76,12 +76,13 @@ async function agregarObservacion(alertaId: number) {
   setGuardandoObservacion(true)
 
   const { error } = await supabase
-    .from('alerta_observaciones')
-    .insert({
-      alerta_id: alertaId,
-      usuario_academia_id: usuarioAcademia.id,
-      comentario,
-    })
+  .from('alerta_observaciones')
+  .insert({
+    alerta_id: alertaId,
+    usuario_academia_id: usuarioAcademia.id,
+    autor_nombre: usuarioAcademia.nombre,
+    comentario,
+  })
 
   setGuardandoObservacion(false)
 
@@ -128,52 +129,27 @@ async function cargarUsuario() {
 }
 
 async function cargarObservacionesAcademia() {
-  const { data: observacionesData, error: observacionesError } = await supabase
+  const { data, error } = await supabase
     .from('alerta_observaciones')
     .select(`
       id,
       alerta_id,
       usuario_academia_id,
+      autor_nombre,
       comentario,
       created_at
     `)
     .order('created_at', { ascending: true })
 
-  if (observacionesError) {
-    console.error(observacionesError)
+  if (error) {
+    console.error(error)
     return
   }
 
-  const usuarioIds = Array.from(
-    new Set((observacionesData ?? []).map((o) => o.usuario_academia_id))
-  )
-
-  const { data: usuariosData, error: usuariosError } = await supabase
-    .from('usuarios_academia')
-    .select('id, nombre')
-    .in('id', usuarioIds)
-
-  if (usuariosError) {
-    console.error(usuariosError)
-    return
-  }
-
-  const observacionesCompletas = (observacionesData ?? []).map((obs) => {
-    const usuario = (usuariosData ?? []).find(
-      (u) => u.id === obs.usuario_academia_id
-    )
-
-    return {
-      ...obs,
-      usuario_nombre: usuario?.nombre ?? 'Usuario Academia',
-    }
-  })
-
-  setObservacionesAcademia(observacionesCompletas)
+  setObservacionesAcademia(data ?? [])
 }
 
-
-  async function cargarAlertas() {
+ async function cargarAlertas() {
     setCargando(true)
     setMensaje('')
 
@@ -653,7 +629,7 @@ const urgentes = alertas.filter(
   .map((obs) => (
     <div className="observacion-academia-item" key={obs.id}>
       <div className="observacion-academia-meta">
-        <strong>{obs.usuario_nombre}</strong>
+  <strong>{obs.autor_nombre || 'Usuario Academia'}</strong>
         <span>{formatearFecha(obs.created_at)}</span>
       </div>
 
