@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import './AcademiaPanel.css'
 
-
 type Alerta = {
   id: number
   created_at: string
@@ -19,6 +18,15 @@ type Alerta = {
   observaciones: string | null
   fecha_cierre: string | null
   nota_cierre: string | null
+}
+
+type ObservacionAcademia = {
+  id: number
+  alerta_id: number
+  usuario_academia_id: number
+  comentario: string
+  created_at: string
+  usuario_nombre?: string
 }
 
 type UsuarioAcademia = {
@@ -42,8 +50,55 @@ export default function AcademiaPanel() {
         useEffect(() => {
         cargarUsuario()
         cargarAlertas()
+        cargarObservacionesAcademia()
         }, [])
   const [busquedaPanel, setBusquedaPanel] = useState('')
+  const [alertaObservando, setAlertaObservando] = useState<number | null>(null)
+const [nuevaObservacion, setNuevaObservacion] = useState('')
+const [guardandoObservacion, setGuardandoObservacion] = useState(false)
+const [observacionesAcademia, setObservacionesAcademia] =
+  useState<ObservacionAcademia[]>([])
+  const [mensajeObservacion, setMensajeObservacion] = useState('')
+
+async function agregarObservacion(alertaId: number) {
+  const comentario = nuevaObservacion.trim()
+
+  if (!comentario) {
+    alert('Escribe una observación.')
+    return
+  }
+
+  if (!usuarioAcademia) {
+    alert('No se pudo identificar al usuario académico.')
+    return
+  }
+
+  setGuardandoObservacion(true)
+
+  const { error } = await supabase
+    .from('alerta_observaciones')
+    .insert({
+      alerta_id: alertaId,
+      usuario_academia_id: usuarioAcademia.id,
+      comentario,
+    })
+
+  setGuardandoObservacion(false)
+
+  if (error) {
+    console.error(error)
+    alert('No pudimos guardar la observación.')
+    return
+  }
+
+  setNuevaObservacion('')
+  setAlertaObservando(null)
+await cargarObservacionesAcademia()
+ setMensajeObservacion('Observación guardada correctamente.')
+ setTimeout(() => {
+  setMensajeObservacion('')
+}, 2500)
+}
 
   async function cerrarSesion() {
   await supabase.auth.signOut()
@@ -71,6 +126,53 @@ async function cargarUsuario() {
 
   setUsuarioAcademia(data)
 }
+
+async function cargarObservacionesAcademia() {
+  const { data: observacionesData, error: observacionesError } = await supabase
+    .from('alerta_observaciones')
+    .select(`
+      id,
+      alerta_id,
+      usuario_academia_id,
+      comentario,
+      created_at
+    `)
+    .order('created_at', { ascending: true })
+
+  if (observacionesError) {
+    console.error(observacionesError)
+    return
+  }
+
+  const usuarioIds = Array.from(
+    new Set((observacionesData ?? []).map((o) => o.usuario_academia_id))
+  )
+
+  const { data: usuariosData, error: usuariosError } = await supabase
+    .from('usuarios_academia')
+    .select('id, nombre')
+    .in('id', usuarioIds)
+
+  if (usuariosError) {
+    console.error(usuariosError)
+    return
+  }
+
+  const observacionesCompletas = (observacionesData ?? []).map((obs) => {
+    const usuario = (usuariosData ?? []).find(
+      (u) => u.id === obs.usuario_academia_id
+    )
+
+    return {
+      ...obs,
+      usuario_nombre: usuario?.nombre ?? 'Usuario Academia',
+    }
+  })
+
+  setObservacionesAcademia(observacionesCompletas)
+}
+
+
   async function cargarAlertas() {
     setCargando(true)
     setMensaje('')
@@ -304,10 +406,6 @@ const urgentes = alertas.filter(
 )}
 
 
-
-
-
-
 <p>
   {usuarioAcademia?.rol === 'coordinadora'
     ? 'Seguimiento general de alertas estudiantiles'
@@ -475,8 +573,9 @@ const urgentes = alertas.filter(
                 <h3>{alerta.motivo}</h3>
                 {alerta.observaciones && (
                 <div className="observaciones-box">
-                <strong>Observaciones</strong>
+               <strong>Observación del docente</strong>
                 <p>{alerta.observaciones}</p>
+             
 
 {alerta.estado === 'Cerrada' && alerta.nota_cierre && (
   <div className="resolucion-box">
@@ -494,6 +593,75 @@ const urgentes = alertas.filter(
                 </div>
                 )}
               </div>
+
+<div className="observacion-academia-acciones">
+  {alertaObservando === alerta.id ? (
+    <div className="observacion-academia-form">
+      <textarea
+        value={nuevaObservacion}
+        onChange={(e) => setNuevaObservacion(e.target.value)}
+        placeholder="Agregar observación interna de Academia..."
+        rows={3}
+        maxLength={500}
+      />
+
+      <p className="contador-cierre">
+        {nuevaObservacion.length}/500
+      </p>
+
+      <div className="cierre-acciones">
+        <button
+          type="button"
+          className="btn-confirmar-cierre"
+          onClick={() => agregarObservacion(alerta.id)}
+          disabled={guardandoObservacion}
+        >
+          {guardandoObservacion ? 'Guardando...' : 'Guardar observación'}
+        </button>
+
+        <button
+          type="button"
+          className="btn-cancelar-cierre"
+          onClick={() => {
+            setAlertaObservando(null)
+            setNuevaObservacion('')
+          }}
+        >
+          Cancelar
+        </button>
+      </div>
+    </div>
+  ) : (
+    <button
+      type="button"
+      className="btn-observacion-academia"
+      onClick={() => setAlertaObservando(alerta.id)}
+    >
+      Agregar observación
+    </button>
+  )}
+</div>
+
+{mensajeObservacion && (
+  <p className="mensaje-observacion">
+    {mensajeObservacion}
+  </p>
+)}
+
+{observacionesAcademia
+  .filter((obs) => obs.alerta_id === alerta.id)
+  .map((obs) => (
+    <div className="observacion-academia-item" key={obs.id}>
+      <div className="observacion-academia-meta">
+        <strong>{obs.usuario_nombre}</strong>
+        <span>{formatearFecha(obs.created_at)}</span>
+      </div>
+
+      <p>{obs.comentario}</p>
+    </div>
+  ))}
+
+
 
               <div className="alerta-footer">
                 <div className="estado-acciones">

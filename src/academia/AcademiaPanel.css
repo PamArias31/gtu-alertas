@@ -489,3 +489,71 @@
   border-color: #6b2b31;
   box-shadow: 0 0 0 3px rgba(107, 43, 49, 0.08);
 }
+
+.observacion-academia-acciones {
+  margin-top: 14px;
+}
+
+.observacion-academia-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 1px solid #d8c7c9;
+  border-radius: 9px;
+  resize: vertical;
+  font-size: 14px;
+}
+
+.observacion-academia-form textarea:focus {
+  outline: none;
+  border-color: #6b2b31;
+  box-shadow: 0 0 0 3px rgba(107, 43, 49, 0.08);
+}
+
+.btn-observacion-academia {
+  border: 1px solid #6b2b31;
+  border-radius: 7px;
+  padding: 7px 11px;
+  background: white;
+  color: #6b2b31;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-observacion-academia:hover {
+  background: #f7eeee;
+}
+
+.observacion-academia-item {
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: #f3f5f8;
+  border-left: 4px solid #5f6673;
+  border-radius: 8px;
+}
+
+.observacion-academia-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.observacion-academia-item p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.mensaje-observacion {
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: #eef7f0;
+  border-left: 4px solid #38734a;
+  border-radius: 8px;
+  color: #285b38;
+  font-size: 13px;
+  font-weight: 700;
+}
