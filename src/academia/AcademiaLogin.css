@@ -86,3 +86,11 @@
   color: #8f1d1d;
   font-size: 14px;
 }
+.academia-login-card {
+  max-width: 560px;
+}
+
+.academia-login-card h1 {
+  font-size: 1.75rem;
+  white-space: nowrap;
+}

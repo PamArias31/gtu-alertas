@@ -42,7 +42,7 @@ export default function AcademiaLogin({ onLogin }: AcademiaLoginProps) {
   return (
   <main className="academia-login-page">
     <div className="academia-login-card">
-      <h1>Panel Académico</h1>
+      <h1>Panel Académico - Alertas</h1>
       <p className="academia-login-subtitle">
         Ingresa con tu cuenta autorizada.
       </p>
